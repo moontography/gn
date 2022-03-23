@@ -17,9 +17,9 @@ contract GN is Context, IERC20, Ownable {
 
   uint8 public marketingPercent = 50; // 0-100%, splits with nightverse wallet
   address payable public marketingDevAddress =
-    payable(0x0000000000000000000000000000000000000000);
+    payable(0xd9ecB6138923107bdd77Ef0fB635BDDEdAa87D1e);
   address payable public nightverseAddress =
-    payable(0x0000000000000000000000000000000000000000);
+    payable(0xC6600d61528c536971c3dD778a076baB5c8b163d);
 
   // PancakeSwap: 0x10ED43C718714eb63d5aA57B78B54704E256024E
   // Uniswap V2: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
@@ -45,8 +45,8 @@ contract GN is Context, IERC20, Ownable {
   uint256 private _rTotal = (MAX - (MAX % _tTotal));
   uint256 private _tFeeTotal;
 
-  uint256 public buyReflectionFee = 0;
-  uint256 public sellReflectionFee = 0;
+  uint256 public buyReflectionFee = 3;
+  uint256 public sellReflectionFee = 3;
   uint256 private _previousBuyReflectFee = buyReflectionFee;
   uint256 private _previousSellReflectFee = sellReflectionFee;
 
@@ -56,12 +56,12 @@ contract GN is Context, IERC20, Ownable {
   uint256 private _previousSellInternalFee = sellInternalFee;
 
   uint256 public buyBurnFee = 0;
-  uint256 public sellBurnFee = 2;
+  uint256 public sellBurnFee = 0;
   uint256 private _previousBuyBurnFee = buyBurnFee;
   uint256 private _previousSellBurnFee = sellBurnFee;
 
-  uint256 public buyLpFee = 3;
-  uint256 public sellLpFee = 3;
+  uint256 public buyLpFee = 0;
+  uint256 public sellLpFee = 2;
   uint256 private _previousBuyLpFee = buyLpFee;
   uint256 private _previousSellLpFee = sellLpFee;
 
@@ -665,11 +665,6 @@ contract GN is Context, IERC20, Ownable {
 
   function _calculateBurnFee(uint256 _amount) private view returns (uint256) {
     uint256 fee = isSelling ? sellBurnFee : buyBurnFee;
-    return _amount.mul(fee).div(10**2);
-  }
-
-  function _calculateLpFee(uint256 _amount) private view returns (uint256) {
-    uint256 fee = isSelling ? sellLpFee : buyLpFee;
     return _amount.mul(fee).div(10**2);
   }
 

@@ -16,6 +16,7 @@ contract GNSwap is Ownable {
   IERC20Decimals private gnV1;
   IERC20Decimals private gnV2;
 
+  mapping(address => uint256) public v1Balances;
   mapping(address => bool) public swapped;
 
   constructor(address _v1, address _v2) {
@@ -25,17 +26,19 @@ contract GNSwap is Ownable {
 
   function swap() external {
     require(!swapped[msg.sender], 'already swapped V1 for V2');
+    require(gnV1.balanceOf(msg.sender) > 0, 'we do not see your balance');
 
     // TODO: determine ratio user should receive from V1 to V2
     // and update here
-    uint256 _v2Amount = gnV1.balanceOf(msg.sender);
+    // uint256 _v2Amount = gnV1.balanceOf(msg.sender);
+    uint256 _v2Amount = getV2Amount(msg.sender);
     require(_v2Amount > 0, 'you do not have any V1 tokens');
     require(
       gnV2.balanceOf(address(this)) >= _v2Amount,
       'not enough V2 liquidity to complete swap'
     );
     swapped[msg.sender] = true;
-    gnV1.transferFrom(msg.sender, address(this), _v2Amount);
+    gnV1.transferFrom(msg.sender, address(this), gnV1.balanceOf(msg.sender));
     gnV2.transfer(
       msg.sender,
       (_v2Amount * 10**gnV2.decimals()) / 10**gnV1.decimals()
@@ -52,6 +55,21 @@ contract GNSwap is Ownable {
 
   function v2() external view returns (address) {
     return address(gnV2);
+  }
+
+  function getV2Amount(address _user) public view returns (uint256) {
+    // return (gnV1.balanceOf(_user) * 120) / 100;
+    return (v1Balances[_user] * 120) / 100;
+  }
+
+  function setBalances(address[] memory _users, uint256[] memory _v1Balances)
+    external
+    onlyOwner
+  {
+    require(_users.length == _v1Balances.length, 'must be same size');
+    for (uint256 i = 0; i < _users.length; i++) {
+      v1Balances[_users[i]] = _v1Balances[i];
+    }
   }
 
   function withdrawTokens(address _tokenAddy, uint256 _amount)
