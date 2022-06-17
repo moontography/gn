@@ -18,6 +18,7 @@ contract GNSplitter is Ownable {
   }
 
   function addWallet(address _wallet, uint8 _weight) external onlyOwner {
+    require(_weight > 0, 'weight needs to be higher than 0');
     receivers.push(Receiver({ wallet: _wallet, weight: _weight }));
     overallWeight += _weight;
   }
